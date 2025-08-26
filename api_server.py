@@ -12,8 +12,10 @@ from openai import OpenAI
 from memory_system import memory_manager, UserProfile, ChatSession
 
 # Configure Mistral API via OpenAI client
-os.environ["OPENAI_API_KEY"] = "BvXava18NiJ5U62jx9bN9RXkSmHC9tSh"
-os.environ["OPENAI_BASE_URL"] = "https://api.mistral.ai/v1"
+if "OPENAI_API_KEY" not in os.environ:
+    os.environ["OPENAI_API_KEY"] = "BvXava18NiJ5U62jx9bN9RXkSmHC9tSh"
+if "OPENAI_BASE_URL" not in os.environ:
+    os.environ["OPENAI_BASE_URL"] = "https://api.mistral.ai/v1"
 
 # Initialize Flask app
 app = Flask(__name__)
