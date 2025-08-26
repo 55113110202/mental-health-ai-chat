@@ -8,7 +8,7 @@ import json
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from openai import OpenAI
+import openai
 from memory_system import memory_manager, UserProfile, ChatSession
 
 # Configure Mistral API via OpenAI client
@@ -17,16 +17,16 @@ if "OPENAI_API_KEY" not in os.environ:
 if "OPENAI_BASE_URL" not in os.environ:
     os.environ["OPENAI_BASE_URL"] = "https://api.mistral.ai/v1"
 
+# Configure OpenAI client
+openai.api_key = os.environ["OPENAI_API_KEY"]
+openai.api_base = os.environ["OPENAI_BASE_URL"]
+
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)  # Allow frontend to connect
 
 class MentalHealthAPI:
     def __init__(self):
-        self.client = OpenAI(
-            api_key=os.environ["OPENAI_API_KEY"],
-            base_url=os.environ["OPENAI_BASE_URL"]
-        )
         self.current_sessions = {}  # session_id -> ChatSession
         self.user_profiles = {}     # user_id -> UserProfile
         
@@ -176,12 +176,11 @@ CONTINUITY GUIDELINES:
             print(f"🧠 Sending to Mistral (User: {profile.name}): {user_message[:50]}...")
             
             # Call Mistral API
-            response = self.client.chat.completions.create(
+            response = openai.ChatCompletion.create(
                 model="mistral-medium-latest",
                 messages=messages,
                 max_tokens=500,
-                temperature=0.7,
-                stream=False
+                temperature=0.7
             )
             
             ai_response = response.choices[0].message.content.strip()
